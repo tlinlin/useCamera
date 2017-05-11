@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <title>html5 capture test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+</head>
+<body>
+<video autoplay width="200px" height="200px" style="border: 1px red solid"></video>
+<button id="startCamera" onclick="getMedia()">开启照相机</button>
+<script>
+    var video = document.querySelector('video');
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+    var exArray = [];
+    MediaStreamTrack.getSources(function (sourceInfos) {
+        for (var i = 0; i != sourceInfos.length; ++i) {
+            var sourceInfo = sourceInfos[i];
+            if (sourceInfo.kind === 'video') {
+                exArray.push(sourceInfo.id);
+            }
+        }
+    });
+
+    function getMedia() {
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia({
+                'video': {
+                    'optional': [{
+                        'sourceId': exArray[1] //0为前置摄像头，1为后置
+                    }]
+                },
+                'audio': true
+            }, successFunc, errorFunc);    //success是获取成功的回调函数
+        }
+        else {
+            alert('Native device media streaming (getUserMedia) not supported in this browser.');
+        }
+    }
+    function successFunc(stream) {
+//        if (video.mozSrcObject !== undefined) {
+//            video.mozSrcObject = stream;
+//        }
+//        else {
+            video.src = window.URL && window.URL.createObjectURL(stream) || stream;
+    //    }
+    }
+    function errorFunc(e) {
+        alert('Error！' + e);
+    }
+</script>
+</body>
+</html>
